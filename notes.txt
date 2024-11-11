@@ -1,0 +1,23 @@
+#0. PLOT THE DATA!!!
+
+#1. Test/Check normality
+	#QQ Plot
+	#Shapiro Wilk Test
+	#Histogram (Usually we don't do only this)
+
+
+#2. Homogenetity of Varience 
+	#Levene's Test
+	#Note: Add Mauchlys test for sphericity if repeated measures design
+
+
+#3. Run the Test
+	#T-Test: means comparison between 2 groups 
+	#ANOVA: means comparison between 3 or more groups
+		#One way ANOVA: means comparison between 3 or more groups
+		#Two way ANOVA: means comparison between 3 or more groups and interaction affects
+		#Nested ANOVA: means comparison between 3 or more groups but we have to account for things in experimental design that cannot be controlled. Nesting affects/variables. 
+			#Mother, herd, city - often a shared condition but not what we're looking at
+		#Repeated measure ANOVA: means comparison between 3 or more groups and multiple measurements within each subject (often at different time points)
+	#Linear Regression: relationship between 2 variables (positive or negative)
+	#Chi-Square test: frequency between defined groups/characters etc. - often behavioral counts,  visitation, preference. Categorical data correlations. 
