@@ -3,7 +3,8 @@ library(tidyverse)
 library(pacman)
 library(sf)
 library(terra)
-
+library(dplyr)
+library(MASS)
 #PLOT DATA
 
 #1 check normality- QQPlot, Shapiro Wilk Test, Histogram
@@ -42,6 +43,27 @@ mid_latitude <- mean(c(california_bbox["ymin"], california_bbox["ymax"]))
 
 locations_sf <- st_transform(locations_sf, st_crs(california_shape))
 
+locations_sf <- locations_sf %>%
+  mutate(region = ifelse(st_coordinates(.)[, 2] > mid_latitude, "North", "South"))
+locations_sf
+
+head(locations_sf)
+
+# Extract data frame from the sf object
+locations_with_region <- locations_sf %>%
+  st_drop_geometry() %>%
+  select(everything(), region)
+
+# Merge the new column back into the original locations data frame
+locations <- locations %>%
+  mutate(region = locations_with_region$region)
+
+write.csv(locations, "locations_with_region.csv", row.names = FALSE)
+
+Regions <- read.csv("locations_with_region.csv")
+View(Regions)
+
+#Final Map Code
 ggplot() +
   geom_sf(data = california_shape, fill = "lightblue", color = "black") +
   geom_sf(data = california_counties, fill = "lightblue", color = "black") +
@@ -59,6 +81,12 @@ ggplot() +
     legend.title = element_text(size = 8) # Adjust the size of the legend title
   ) +
   coord_sf()       
+
+
+
+regions_data <- data.frame(Regions$region,Regions$infections_reported)
+View(regions_data)
+
 
 
 
@@ -128,4 +156,10 @@ ggplot() +
   labs(title = "MRSA In California") +
   theme(legend.position = "none") +  # Remove the legend
   coord_sf()                         # Keep aspect ratio intact
+
+
+
+
+
+
 
