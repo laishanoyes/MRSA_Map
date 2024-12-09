@@ -50,9 +50,10 @@ locations_sf
 head(locations_sf)
 
 # Extract data frame from the sf object
+library(dplyr)  # Ensure dplyr is loaded
 locations_with_region <- locations_sf %>%
   st_drop_geometry() %>%
-  select(everything(), region)
+  dplyr::select(everything())
 
 # Merge the new column back into the original locations data frame
 locations <- locations %>%
@@ -87,6 +88,28 @@ ggplot() +
 regions_data <- data.frame(Regions$region,Regions$infections_reported)
 View(regions_data)
 
+
+chi_squared_result <- chisq.test(regions_data$Regions.region, regions_data$Regions.infections_reported)
+print(chi_squared_result)
+
+t_test_result <- t.test(Regions$infections_reported ~ Regions$region, data = regions_data)
+print(t_test_result)
+
+
+summary_stats <- aggregate(Regions$infections_reported ~ Regions$region, data = regions_data, 
+                           FUN = function(x) c(mean = mean(x), ci = qt(0.975, df = length(x)-1) * sd(x)/sqrt(length(x))))
+summary_stats <- do.call(data.frame, summary_stats)
+colnames(summary_stats) <- c("Region", "Mean", "CI")
+
+
+ggplot(summary_stats, aes(x = Region, y = Mean, fill = Region)) +
+  geom_bar(stat = "identity", color = "black", width = 0.6) +
+  geom_errorbar(aes(ymin = Mean - CI, ymax = Mean + CI), width = 0.2) +
+  labs(title = "Mean Infections Reported by Region",
+       x = "Region",
+       y = "Mean Infections Reported") +
+  theme_minimal() +
+  scale_fill_manual(values = c("skyblue", "lightgreen"))
 
 
 
